@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: wordpress_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: kabeer
+      MYSQL_PASSWORD: "64230037"
+    volumes:
+      - db_data:/var/lib/mysql
+  
+  wordpress:
+    image: wordpress
+    container_name: wordpress_app
+    restart: always
+    depends_on:
+      - mariadb
+    environment:
+      - WORDPRESS_DB_HOST: mariadb
+      - WORDPRESS_DB_USER: kabeer
+      - WORDPRESS_DB_PASSWORD: "64230037"
+      - WRODPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+
+  nginx:
+    image: nginx:alpine
+    container_name: wordpress_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./nginx:/etc/nginx/conf.d
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+  
+  certbot:
+    image: certbot/certbot
+    container_name: wordpress_certbot
+    volumes:
+      - certbot_certs:/etc/letsencryypt
+      - certbot_www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap EXIT term; while:; do certbot renew; sleep12h & wait $${!}; done;"
