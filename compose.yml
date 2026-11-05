@@ -5,7 +5,7 @@ services:
     container_name: wordpress_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ROOT_PASSWORD: "64230037"
       MYSQL_DATABASE: wordpress
       MYSQL_USER: kabeer
       MYSQL_PASSWORD: "64230037"
@@ -48,3 +48,4 @@ services:
       - certbot_certs:/etc/letsencryypt
       - certbot_www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap EXIT term; while:; do certbot renew; sleep12h & wait $${!}; done;"
+    
